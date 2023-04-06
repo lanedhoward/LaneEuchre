@@ -152,7 +152,7 @@ int Game::Trick(int trumpSuit, int trumpTeam)
 		}
 	}
 
-	Print("Trick complete. Highest Card: " + trick.highestCard->GetFullName() + "   Winning Team: " + std::to_string(trick.highestTeam));
+	Print("Trick complete. \n    Trump Suit: " + EuchreNames::GetSuitName(trick.trumpSuit) + " \n    Lead Suit: " + EuchreNames::GetSuitName(trick.leadSuit) + " \n    Trump team: " + std::to_string(trick.trumpTeam) + " \n    Highest Card: " + trick.highestCard->GetFullName() + " \n    Winning Team: " + std::to_string(trick.highestTeam));
 
 	return trick.highestTeam;
 }
