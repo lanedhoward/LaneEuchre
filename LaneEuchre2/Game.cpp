@@ -24,7 +24,7 @@ std::string Game::Run()
 	teamScores[0] = 0;
 	teamScores[1] = 0;
 
-	const size_t MAX_ROUNDS = 10;
+	const size_t MAX_ROUNDS = 50;
 
 	for (size_t i = 0; i < MAX_ROUNDS; i++)
 	{

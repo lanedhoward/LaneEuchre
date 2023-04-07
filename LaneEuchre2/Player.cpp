@@ -51,7 +51,7 @@ bool Player::AcceptTheTrump(Card c)
 
 Card* Player::PlayCard(TrickData trick)
 {
-	PrintHandContents();
+	//PrintHandContents();
 
 
 	int highestCardValue = -1000;
@@ -93,14 +93,14 @@ Card* Player::PlayCard(TrickData trick)
 
 	if (!myTeamWinning)
 	{
-		Print("                       Deleting at index " + std::to_string(myHighestCardIndex));
+		//Print("                       Deleting at index " + std::to_string(myHighestCardIndex));
 		m_hand->erase(m_hand->begin() + myHighestCardIndex);
-		PrintHandContents();
+		//PrintHandContents();
 		return myHighestCard;
 	}
-	Print("                       Deleting at index " + std::to_string(myHighestCardIndex));
+	//Print("                       Deleting at index " + std::to_string(myHighestCardIndex));
 	m_hand->erase(m_hand->begin() + myLowestCardIndex);
-	PrintHandContents();
+	//PrintHandContents();
 	return myLowestCard;
 
 }
