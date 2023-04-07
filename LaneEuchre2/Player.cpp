@@ -1,8 +1,11 @@
 #include "Player.h"
+#include "ConsoleUtils.h"
+
+using namespace ConsoleUtils;
 
 Player::Player()
 {
-	m_hand = vector<Card>();
+	m_hand = new vector<Card*>();
 }
 
 void Player::Initialize(Deck* _deck, int _team)
@@ -14,24 +17,25 @@ void Player::Initialize(Deck* _deck, int _team)
 
 void Player::Reset()
 {
-	m_hand.clear();
+	m_hand->clear();
 }
 
-void Player::AddToHand(Card c)
+void Player::AddToHand(Card* c)
 {
-	m_hand.push_back(c);
+	m_hand->push_back(c);
 }
 
 bool Player::AcceptTheTrump(Card c)
 {
 	int trumpCardsInHand = 0;
 
-	for (size_t i = 0; i < m_hand.size(); i++)
+	for (size_t i = 0; i < m_hand->size(); i++)
 	{
-		Card current = m_hand[i];
+		//https://stackoverflow.com/questions/6946217/how-to-access-the-contents-of-a-vector-from-a-pointer-to-the-vector-in-c
+		Card* current = m_hand->at(i);
 
-		if (current.suit == c.suit ||
-			(current.value == 11 && ((current.suit < 2) == (c.suit < 2)))) // checking for lesser trump jack
+		if (current->suit == c.suit ||
+			(current->value == 11 && ((current->suit < 2) == (c.suit < 2)))) // checking for lesser trump jack
 		{
 			trumpCardsInHand++;
 		}
@@ -45,8 +49,10 @@ bool Player::AcceptTheTrump(Card c)
 	return false;
 }
 
-Card Player::PlayCard(TrickData trick)
+Card* Player::PlayCard(TrickData trick)
 {
+	PrintHandContents();
+
 
 	int highestCardValue = -1000;
 	if (trick.highestCard != NULL)
@@ -55,18 +61,18 @@ Card Player::PlayCard(TrickData trick)
 	}
 	bool myTeamWinning = trick.highestTeam == this->team;
 
-	int firstCardValue = Game::EvaluateCardScore(m_hand[0], trick);
+	int firstCardValue = Game::EvaluateCardScore(*m_hand->at(0), trick);
 
 	int myHighestCardValue = firstCardValue;
 	int myHighestCardIndex = 0;
-	Card* myHighestCard = &m_hand[0];
+	Card* myHighestCard = m_hand->at(0);
 	int myLowestCardValue = firstCardValue;
 	int myLowestCardIndex = 0;
-	Card* myLowestCard = &m_hand[0];
+	Card* myLowestCard = m_hand->at(0);
 
-	for (size_t i = 1; i < m_hand.size(); i++)
+	for (size_t i = 1; i < m_hand->size(); i++)
 	{
-		Card* current = &m_hand[i];
+		Card* current = m_hand->at(i);
 
 		int currentCardValue = Game::EvaluateCardScore(*current, trick);
 
@@ -79,15 +85,6 @@ Card Player::PlayCard(TrickData trick)
 
 		if (currentCardValue < myLowestCardValue)
 		{
-			/*
-			if (myLowestCard != nullptr)
-			{
-				if (current.value > myLowestCard->value)
-				{
-					continue;
-				}
-			}
-			*/
 			myLowestCard = current;
 			myLowestCardValue = currentCardValue;
 			myLowestCardIndex = i;
@@ -96,10 +93,24 @@ Card Player::PlayCard(TrickData trick)
 
 	if (!myTeamWinning)
 	{
-		m_hand.erase(m_hand.begin() + myHighestCardIndex);
-		return *myHighestCard;
+		Print("                       Deleting at index " + std::to_string(myHighestCardIndex));
+		m_hand->erase(m_hand->begin() + myHighestCardIndex);
+		PrintHandContents();
+		return myHighestCard;
 	}
-	m_hand.erase(m_hand.begin() + myLowestCardIndex);
-	return *myLowestCard;
+	Print("                       Deleting at index " + std::to_string(myHighestCardIndex));
+	m_hand->erase(m_hand->begin() + myLowestCardIndex);
+	PrintHandContents();
+	return myLowestCard;
 
+}
+
+void Player::PrintHandContents()
+{
+	string allCards = "            Current Hand: ";
+	for (size_t i = 0; i < m_hand->size(); i++)
+	{
+		allCards += "\n                " + m_hand->at(i)->GetFullName();
+	}
+	Print(allCards);
 }

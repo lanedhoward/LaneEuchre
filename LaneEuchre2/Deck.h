@@ -13,7 +13,7 @@ public:
 	Deck();
 	void Populate();
 	void Shuffle();
-	Card Draw();
+	Card* Draw();
 	void Reset();
 };
 

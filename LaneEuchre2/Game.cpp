@@ -60,7 +60,7 @@ void Game::Round()
 	DealCardsToEachPlayer(3);
 
 	// determine trump suit
-	Card potentialTrump = gameDeck.Draw();
+	Card potentialTrump = *gameDeck.Draw();
 
 	bool acceptedTrump = false;
 	// might need to make these instance vars instead of local vars
@@ -121,35 +121,37 @@ int Game::Trick(int trumpSuit, int trumpTeam)
 	trick.trumpSuit = trumpSuit;
 	trick.trumpTeam = trumpTeam;
 	
+	Print("New Trick. Trump is " + EuchreNames::GetSuitName(trumpSuit));
 
 	for (size_t i = 0; i < players.size(); i++)
 	{
 		Player* p = &players[i];
-		Card playedCard = p->PlayCard(trick);
+		Card* playedCard = p->PlayCard(trick);
 
 		if (trick.highestCard == nullptr)
 		{
 			// first player
-			trick.highestCard = &playedCard;
+			trick.highestCard = playedCard;
 			trick.highestTeam = p->team;
-			trick.leadSuit = playedCard.suit;
+			trick.leadSuit = playedCard->suit;
 		}
 		else
 		{
 			//compare played card to the current trick
-			if (EvaluateCardScore(*trick.highestCard, trick) < EvaluateCardScore(playedCard, trick))
+			if (EvaluateCardScore(*trick.highestCard, trick) < EvaluateCardScore(*playedCard, trick))
 			{
-				trick.highestCard = &playedCard;
+				trick.highestCard = playedCard;
 				trick.highestTeam = p->team;
 
-				if (trick.trumpSuit == playedCard.suit ||
-					(playedCard.value == 11 && ((trick.trumpSuit < 2) == (playedCard.suit < 2)))) // checking for lesser trump jack
+				if (trick.trumpSuit == playedCard->suit ||
+					(playedCard->value == 11 && ((trick.trumpSuit < 2) == (playedCard->suit < 2)))) // checking for lesser trump jack
 				{
 					trick.hasBeenTrumped = true;
 				}
 
 			}
 		}
+		Print("    Player " + std::to_string(i) + " (Team " + std::to_string(p->team) + ") played " + playedCard->GetFullName());
 	}
 
 	Print("Trick complete. \n    Trump Suit: " + EuchreNames::GetSuitName(trick.trumpSuit) + " \n    Lead Suit: " + EuchreNames::GetSuitName(trick.leadSuit) + " \n    Trump team: " + std::to_string(trick.trumpTeam) + " \n    Highest Card: " + trick.highestCard->GetFullName() + " \n    Winning Team: " + std::to_string(trick.highestTeam));

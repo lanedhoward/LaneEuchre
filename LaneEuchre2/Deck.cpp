@@ -40,9 +40,9 @@ void Deck::Shuffle()
 	}
 }
 
-Card Deck::Draw()
+Card* Deck::Draw()
 {
-	Card drawn = deck.back();
+	Card* drawn = &deck.back();
 	deck.pop_back();
 	return drawn;
 }
